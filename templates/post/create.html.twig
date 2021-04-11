@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 col-md-offset-2">
+                <h1 class="text-center">Create post</h1>
+
+                {{ form_start(form) }}
+
+                    <div class="form-group has-error">
+                        <label for="slug">Title <span class="require">*</span> </label>
+                        {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.title) }}
+                    </div>
+
+                    <div class="form-group has-error">
+                        <label for="slug">Body <span class="require">*</span> </label>
+                        {{ form_widget(form.body, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.body) }}
+                    </div>
+
+                    <div class="form-group has-error">
+                        <label for="slug">Category <span class="require">*</span> </label>
+                        {{ form_widget(form.category, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.category) }}
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">
+                            Create
+                        </button>
+                    </div>
+
+                {{ form_end(form) }}
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

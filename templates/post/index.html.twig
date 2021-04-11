@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="col-md-12">
+            {% for post in posts %}
+            <h1>
+                {% if post.user is not null and post.user.id == app.user.id %}
+                    <a href="{{ path('post_edit', {'id': post.id}) }}">{{ post.title }}</a>
+                {% else %}
+                    {{ post.title }}
+                {% endif %}
+            </h1>
+                <p>{{ post.body }}</p>
+            {% if post.category is not null %}
+                <div>
+                    <div class="pull-right"><span class="label label-default"><b>Category:&nbsp;</b>{{ post.category.name }}</span>
+                        {% if post.user is not null and post.user.id == app.user.id %}
+                            <a class="float-right" href="{{ path('post_delete', {'id': post.id}) }}">Remove</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+                <hr>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
