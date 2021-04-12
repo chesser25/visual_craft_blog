@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {% include 'flash/error_message.html.twig' %}
+
+    {{ form_start(form) }}
+        <div class="form-group">
+            {{ form_row(form.file) }}
+        </div>
+        <input type="submit" class="form-control btn btn-primary w-auto ml-2 mt-2"/>
+    {{ form_end(form) }}
+{% endblock %}

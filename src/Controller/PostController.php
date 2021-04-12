@@ -3,7 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use App\Form\PostFileType;
 use App\Form\PostType;
+use App\Service\FileService;
+use App\Service\PostImporter;
 use App\Service\PostService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,9 +15,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class PostController extends AbstractController
 {
     private $postService;
-    public function __construct(PostService $postService)
+    private $postImporter;
+    private $fileService;
+    public function __construct(PostService $postService, PostImporter $postImporter, FileService $fileService)
     {
         $this->postService = $postService;
+        $this->postImporter = $postImporter;
+        $this->fileService = $fileService;
     }
 
     /**
@@ -86,6 +93,42 @@ class PostController extends AbstractController
         $posts = $this->postService->searchPosts($keyword);
         return $this->render('post/index.html.twig', [
             'posts' => $posts
+        ]);
+    }
+
+    /**
+     * @Route("/import", name="post_import")
+     */
+    public function import(Request $request){
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $form = $this->createForm(PostFileType::class);
+        if($request->isMethod('POST')){
+
+            // Get data
+            $currentUser = $this->getUser();
+            $file = $request->files->get('post_file')['file'];
+
+            // Try to import
+            $this->postImporter->importPosts($file, $currentUser);
+
+            // Show errors, if they are
+            $errors = $this->postImporter->getErrors();
+            if($errors){
+                foreach ($errors as $error){
+                    $this->addFlash('error', $error);
+                }
+                return $this->redirectToRoute('post_import');
+            }
+
+            // Remove file
+            $filename = $this->postImporter->getCsvFileName();
+            $this->fileService->remove($filename);
+
+            // Go to posts
+            return $this->redirectToRoute('posts');
+        }
+        return $this->render('post/import.html.twig', [
+            'form' => $form->createView()
         ]);
     }
 }
